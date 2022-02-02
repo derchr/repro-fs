@@ -1,5 +1,8 @@
 First run `cargo build`
-then run the scripts in this order:
+Flash once with `espflash /dev/ttyUSB0 target/xtensa-esp32-espidf/debug/repro-fs` to have a valid bootloader.
+Ignore the output in espmonitor.
+
+Then run the scripts in this order:
 
 ```
 ./create-partition-table.sh
@@ -8,5 +11,5 @@ then run the scripts in this order:
 ./flash-app.sh
 ```
 
-In the output, the readme.txt will be truncated (first 3 letters/bytes missing)
+In the output (espmonitor), the readme.txt will be truncated (first 3 letters/bytes missing)
 
