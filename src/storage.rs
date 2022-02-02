@@ -3,8 +3,9 @@ use std::ffi::CString;
 
 pub const BASE_DIR: &str = "/mnt";
 
+static mut WL_HANDLE: wl_handle_t = 0;
+
 pub struct StorageHandle {
-    wl_handle: wl_handle_t,
     base_path: CString,
 }
 
@@ -18,19 +19,17 @@ impl StorageHandle {
             format_if_mount_failed: false,
             ..Default::default()
         };
-        let mut wl_handle: esp_idf_sys::wl_handle_t = 0;
 
         unsafe {
             esp_idf_sys::esp_vfs_fat_spiflash_mount(
                 base_path.as_ptr(),
                 partition_label.as_ptr(),
                 &fat_cfg as *const _,
-                &mut wl_handle as *mut _,
+                &mut WL_HANDLE as *mut _,
             );
         }
 
         Self {
-            wl_handle,
             base_path,
         }
     }
@@ -45,7 +44,7 @@ impl Default for StorageHandle {
 impl Drop for StorageHandle {
     fn drop(&mut self) {
         unsafe {
-            esp_idf_sys::esp_vfs_fat_spiflash_unmount(self.base_path.as_ptr(), self.wl_handle);
+            esp_idf_sys::esp_vfs_fat_spiflash_unmount(self.base_path.as_ptr(), WL_HANDLE);
         }
     }
 }
